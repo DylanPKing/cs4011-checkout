@@ -12,6 +12,6 @@ func Test_New_Manager_Creates_Empty_Struct(t *testing.T) {
 	storeManager := manager.NewManager()
 
 	//Assert
-	assert.Nil(t, storeManager.InitialNumberOfCheckouts)
-	assert.Nil(t, storeManager.NumberOfExpressCheckouts)
+	assert.Equal(t, 0, storeManager.InitialNumberOfCheckouts)
+	assert.Equal(t, 0, storeManager.NumberOfExpressCheckouts)
 }
