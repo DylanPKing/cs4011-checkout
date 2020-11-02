@@ -22,8 +22,8 @@ func NewManager() *Manager {
 // StartCheckouts asks the user to initialise the number of checkouts.
 func (manager *Manager) StartCheckouts() {
 	for {
-		manager.InitialNumberOfCheckouts = userInputInt("Please input the initial number of operating checkouts [1-8]")
-		manager.NumberOfExpressCheckouts = userInputInt("Please input the number of express checkouts(no more than 5 items)")
+		manager.InitialNumberOfCheckouts = UserInputInt("Please input the initial number of operating checkouts [1-8]")
+		manager.NumberOfExpressCheckouts = UserInputInt("Please input the number of express checkouts(no more than 5 items)")
 		if manager.NumberOfExpressCheckouts > manager.InitialNumberOfCheckouts {
 			fmt.Println("You can't have more express checkouts than there are total checkouts dingus...\nTry to put in some logical values ya?")
 			continue
@@ -32,8 +32,8 @@ func (manager *Manager) StartCheckouts() {
 	}
 }
 
-// userInputInt asks the user to input an int to use as an initial value
-func userInputInt(text string) int {
+// UserInputInt asks the user to input an int to use as an initial value
+func UserInputInt(text string) int {
 	regex, _ := regexp.Compile("[0-9]")
 	var userInput string
 	var number int
