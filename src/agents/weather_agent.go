@@ -22,7 +22,7 @@ type Condition struct {
 // NewWeather creates a new Weather struct NOTE: this returns a pointer
 func NewWeather(seed *rand.Source) *Weather {
 	// Roll for the set of conditions that the simulation will use
-	conditions := newCondition()
+	conditions := NewCondition()
 	conditions.setConditions(seed)
 
 	// Create the struct
@@ -37,7 +37,7 @@ func NewWeather(seed *rand.Source) *Weather {
 }
 
 // newCondition creates a new condition struct to hold the possible weather conditions
-func newCondition() *Condition {
+func NewCondition() *Condition {
 	// Create an empty struct here and populate when creating the weather agent
 	conditions := Condition{}
 	return &conditions
