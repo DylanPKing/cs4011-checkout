@@ -28,7 +28,7 @@ func (processor *DataProcessor) ComputeAverageUtilisation() {
 	}
 }
 
-// AverageUtilisationLoop Is the core loop used to calculate the total, and
+// AverageUtilisationLoop is the core loop used to calculate the total, and
 // average utilisation of each checkout.
 func (processor *DataProcessor) AverageUtilisationLoop(
 	totalTimePerCheckout *[]float64,
@@ -55,7 +55,7 @@ func (processor *DataProcessor) computeUtilisation(
 }
 
 // CheckoutUsageData contains data that will be used to calculate utilisation
-// avergaes.
+// averages.
 type CheckoutUsageData struct {
 	CheckoutNum             int
 	TimeSpent               float64
