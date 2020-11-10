@@ -74,6 +74,30 @@ func Test_averageUtlisationLoop(t *testing.T) {
 	}
 }
 
+func Test_ComputeAverageUtilisation(t *testing.T) {
+	processor := agents.DataProcessor{
+		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
+		AvgCheckoutUseTime: 0.0,
+	}
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			processor.CheckoutUsage <- &agents.CheckoutUsageData{
+				CheckoutNum:             i,
+				TimeSpent:               10.0,
+				TotalCustomersProcessed: 5,
+			}
+		}
+		close(processor.CheckoutUsage)
+	}()
+
+	go func() {
+		processor.ComputeAverageUtilisation()
+		_, ok := <-processor.CheckoutUsage
+		assert.Equal(t, ok, false)
+	}()
+}
+
 func assertCheckoutUsageData(
 	t *testing.T, actual *agents.CheckoutUsageData,
 	num int, spent float64, processed int,
