@@ -24,6 +24,8 @@ func (processor *DataProcessor) ComputeAverageUtilisation() {
 			processor.AverageUtilisationLoop(
 				&totalTimePerCheckout, &avgTimePerCheckout, &utilisation, data,
 			)
+		} else {
+			break
 		}
 	}
 }
