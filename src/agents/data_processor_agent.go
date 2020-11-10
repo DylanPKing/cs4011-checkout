@@ -28,6 +28,8 @@ func (processor *DataProcessor) ComputeAverageUtilisation() {
 	}
 }
 
+// AverageUtilisationLoop Is the core loop used to calculate the total, and
+// average utilisation of each checkout.
 func (processor *DataProcessor) AverageUtilisationLoop(
 	totalTimePerCheckout *[]float64,
 	avgTimePerCheckout *[]float64,
