@@ -15,20 +15,40 @@ type DataProcessor struct {
 // ComputeAverageUtilisation collects the total usage of each checkout and
 // computes their average.
 func (processor *DataProcessor) ComputeAverageUtilisation() {
-	var totalTimePerCheckout []float64
-	var avgTimePerCheckout []float64
-	var utilisation []float64
+	totalTimePerCheckout := make([]float64, 10)
+	avgTimePerCheckout := make([]float64, 10)
+	utilisation := make([]float64, 10)
 	for {
-		data := <-processor.CheckoutUsage
+		data, ok := <-processor.CheckoutUsage
+		if ok {
+			processor.AverageUtilisationLoop(
+				&totalTimePerCheckout, &avgTimePerCheckout, &utilisation, data,
+			)
+		}
+	}
+}
 
-		totalTimePerCheckout[data.CheckoutNum] += data.TimeSpent
-		avgTimePerCheckout[data.CheckoutNum] =
-			totalTimePerCheckout[data.CheckoutNum] /
-				(float64)(data.TotalCustomersProcessed)
+func (processor *DataProcessor) AverageUtilisationLoop(
+	totalTimePerCheckout *[]float64,
+	avgTimePerCheckout *[]float64,
+	utilisation *[]float64,
+	data *CheckoutUsageData,
+) {
+	(*totalTimePerCheckout)[data.CheckoutNum] += data.TimeSpent
+	(*avgTimePerCheckout)[data.CheckoutNum] =
+		(*totalTimePerCheckout)[data.CheckoutNum] /
+			(float64)(data.TotalCustomersProcessed)
 
-		utilisation[data.CheckoutNum] =
-			totalTimePerCheckout[data.CheckoutNum] /
-				utils.Sum(&totalTimePerCheckout)
+	processor.computeUtilisation(totalTimePerCheckout, utilisation)
+}
+
+func (processor *DataProcessor) computeUtilisation(
+	totalTimePerCheckout *[]float64, utilisation *[]float64,
+) {
+	for i := range *utilisation {
+		(*utilisation)[i] =
+			(*totalTimePerCheckout)[i] /
+				utils.Sum(totalTimePerCheckout)
 	}
 }
 
