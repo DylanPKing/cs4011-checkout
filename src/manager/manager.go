@@ -2,7 +2,9 @@
 package manager
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 )
@@ -34,17 +36,21 @@ func (manager *Manager) StartCheckouts() {
 
 // UserInputInt asks the user to input an int to use as an initial value
 func UserInputInt(text string) int {
-	regex, _ := regexp.Compile("[0-9]")
+	regex, _ := regexp.Compile("[[:digit:]]{1}")
 	var userInput string
 	var number int
+
+	stdin := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Println(text)
 		fmt.Scanln(&userInput)
+
 		// Check for regex
 		check := regex.MatchString(userInput)
 		if !check {
 			fmt.Println("Error: You were supposed to put in an integer number in range 1-8 dingus -_-, \nTry again...")
+			stdin.ReadString('\n')
 			continue
 		}
 		// Check for an integer
