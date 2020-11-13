@@ -1,4 +1,4 @@
-package 
+package agents
 
 import "math/rand"
 
@@ -14,10 +14,16 @@ type Product struct {
 	Weight float32
 }
 
+// RandnumGen generates a random number for given parameter
+func RandnumGen(seed *rand.Source, num int) int {
+	randomNum := (rand.New(*seed)).Intn(num)
+	return randomNum
+}
+
 // NewCustomer creates a new customer
 func NewCustomer(seed *rand.Source) *Customer {
-	p := generatePatience(seed)
-	t := fillTrolley(seed)
+	p := float32(RandnumGen(seed, 10))
+	t := FillTrolley(seed)
 	customer := Customer{
 		Patience:      p,
 		NumberOfItems: t,
@@ -26,39 +32,21 @@ func NewCustomer(seed *rand.Source) *Customer {
 	return &customer
 }
 
-//generatePatience randomly generates a customers patience
-func generatePatience(seed *rand.Source) float32 {
-	randomNum := (rand.New(*seed)).Intn(10)
-	return float32(randomNum)
-}
-
-//newProduct returns a product
-func newProduct(seed *rand.Source) *Product {
-	w := generateWeight(seed)
+//NewProduct returns a product
+func NewProduct(seed *rand.Source) *Product {
+	w := float32(RandnumGen(seed, 12) + 1)
 	product := Product{
 		Weight: w,
 	}
 	return &product
 }
 
-//generateWeight randomly generates a products weight
-func generateWeight(seed *rand.Source) float32 {
-	randomNum := (rand.New(*seed)).Intn(12)
-	return float32(randomNum)
-}
-
-//generateNumItems randomly generates the number of items
-func generateNumItems(seed *rand.Source) int {
-	randomNum := (rand.New(*seed)).Intn(200) + 1
-	return randomNum
-}
-
-//fillTrolley fills a customers trolley with a random number of items of a random weight
-func fillTrolley(seed *rand.Source) []*Product {
-	NumberOfItems := generateNumItems(seed)
+//FillTrolley fills a customers trolley with a random number of items of a random weight
+func FillTrolley(seed *rand.Source) []*Product {
+	NumberOfItems := RandnumGen(seed, 200) + 1
 	trolley := make([]*Product, NumberOfItems)
 	for i := 0; i < NumberOfItems; i++ {
-		trolley[i] = newProduct(seed)
+		trolley[i] = NewProduct(seed)
 	}
 	return trolley
 }
@@ -74,10 +62,10 @@ func (c *Customer) ToggleQueue() {
 //Probably dealt with in the main when a new customer is called
 
 //Going to the checkout
-	//when trolley is filled
-	//go to checkout
-	//compare queues, probably array of queues of open checkouts
-	//is added to checkout for handling
+//when trolley is filled
+//go to checkout
+//compare queues, probably array of queues of open checkouts
+//is added to checkout for handling
 
 //Leaving the store
-	//to be decided
+//to be decided
