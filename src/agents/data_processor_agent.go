@@ -10,6 +10,7 @@ type DataProcessor struct {
 	CheckoutUsage chan *CheckoutUsageData
 	// CustomerData       chan *Customer
 	AvgCheckoutUseTime float64
+	DataLogger         *Logger
 }
 
 // ComputeAverageUtilisation collects the total usage of each checkout and
@@ -23,6 +24,9 @@ func (processor *DataProcessor) ComputeAverageUtilisation() {
 		if ok {
 			processor.AverageUtilisationLoop(
 				&totalTimePerCheckout, &avgTimePerCheckout, &utilisation, data,
+			)
+			processor.DataLogger.LogCheckoutUtlisation(
+				totalTimePerCheckout, avgTimePerCheckout, utilisation,
 			)
 		} else {
 			break
