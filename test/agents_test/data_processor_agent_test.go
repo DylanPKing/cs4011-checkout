@@ -107,6 +107,13 @@ func Test_ComputeAverageUtilisation(t *testing.T) {
 	}()
 }
 
+func Test_IncrementLostCustomers(t *testing.T) {
+	processor := agents.DataProcessor{}
+	processor.IncrementLostCustomers()
+
+	assert.Equal(t, processor.LostCustomers, int64(1))
+}
+
 func assertCheckoutUsageData(
 	t *testing.T, actual *agents.CheckoutUsageData,
 	num int, spent float64, processed int,
