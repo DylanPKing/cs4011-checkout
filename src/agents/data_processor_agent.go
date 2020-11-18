@@ -1,6 +1,8 @@
 package agents
 
 import (
+	"sync/atomic"
+
 	"../utils"
 )
 
@@ -10,6 +12,7 @@ type DataProcessor struct {
 	CheckoutUsage chan *CheckoutUsageData
 	// CustomerData       chan *Customer
 	AvgCheckoutUseTime float64
+	LostCustomers      int64
 }
 
 // ComputeAverageUtilisation collects the total usage of each checkout and
@@ -54,6 +57,12 @@ func (processor *DataProcessor) computeUtilisation(
 			(*totalTimePerCheckout)[i] /
 				utils.Sum(totalTimePerCheckout)
 	}
+}
+
+// IncrementLostCustomers updates the number of customers that have given up
+// and left.
+func (processor *DataProcessor) IncrementLostCustomers() {
+	atomic.AddInt64(&processor.LostCustomers, 1)
 }
 
 // CheckoutUsageData contains data that will be used to calculate utilisation
