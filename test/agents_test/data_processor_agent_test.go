@@ -22,6 +22,9 @@ func Test_DataProcessor_Creation(t *testing.T) {
 	actualValue := agents.DataProcessor{
 		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
 		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
 	}
 
 	go func() {
@@ -48,6 +51,9 @@ func Test_averageUtlisationLoop(t *testing.T) {
 	processor := agents.DataProcessor{
 		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
 		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
 	}
 
 	go func() {
@@ -78,6 +84,9 @@ func Test_ComputeAverageUtilisation(t *testing.T) {
 	processor := agents.DataProcessor{
 		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
 		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
 	}
 
 	go func() {
