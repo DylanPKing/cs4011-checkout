@@ -1,9 +1,11 @@
 package test
 
 import (
+	"io/ioutil"
 	"testing"
 
 	"../../src/agents"
+	"../../src/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,4 +45,25 @@ func Test_LogCheckoutUtilisation(t *testing.T) {
 	actualOutput := logger.OutputBuffer.String()
 
 	assert.Equal(t, actualOutput, expectedOutput)
+}
+
+func Test_WriteOutputToFile(t *testing.T) {
+	filePath := "../../out/test_output"
+
+	logger := &agents.Logger{
+		OutputFile: filePath,
+	}
+
+	expectedOutput := "Test output"
+
+	logger.OutputBuffer.WriteString(expectedOutput)
+
+	logger.WriteOutputToFile()
+
+	fileBytes, err := ioutil.ReadFile(filePath)
+	utils.CheckIsErrorRaised(err)
+
+	actualOutput := string(fileBytes)
+
+	assert.Equal(t, expectedOutput, actualOutput)
 }
