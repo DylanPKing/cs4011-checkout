@@ -54,4 +54,17 @@ func (logger *Logger) createOutputFileIfNotExists() {
 	file, err := os.Create(logger.OutputFile)
 	utils.CheckIsErrorRaised(err)
 	file.Close()
+
+// LogCustomerLost Logs when a customer leaves the store without buying
+// anything, and the total number of customers lost.
+func (logger *Logger) LogCustomerLost(totalLostCustomers int64) {
+	var output strings.Builder
+	output.WriteString(
+		fmt.Sprintln("A customer has lost their patience and left the store"),
+	)
+	output.WriteString(
+		fmt.Sprintf("\tTotal customers lost: %d\n", totalLostCustomers),
+	)
+	fmt.Print(output.String())
+	logger.OutputBuffer.WriteString(output.String())
 }

@@ -67,6 +67,7 @@ func (processor *DataProcessor) computeUtilisation(
 // and left.
 func (processor *DataProcessor) IncrementLostCustomers() {
 	atomic.AddInt64(&processor.LostCustomers, 1)
+	processor.DataLogger.LogCustomerLost(processor.LostCustomers)
 }
 
 // CheckoutUsageData contains data that will be used to calculate utilisation
