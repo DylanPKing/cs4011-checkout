@@ -2,7 +2,11 @@ package agents
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
+
+	"../utils"
 )
 
 // Logger is used to print data to the console and to an output file.
@@ -35,6 +39,21 @@ func (logger *Logger) LogCheckoutUtlisation(
 	fmt.Print(output.String())
 	logger.OutputBuffer.WriteString(output.String())
 }
+
+// WriteOutputToFile will dump all of the logged data during execution to an
+// output file at the end of nthe programs runtime.
+func (logger *Logger) WriteOutputToFile() {
+	logger.createOutputFileIfNotExists()
+	bytes := []byte(logger.OutputBuffer.String())
+	err := ioutil.WriteFile(logger.OutputFile, bytes, 0644)
+	utils.CheckIsErrorRaised(err)
+	logger.OutputBuffer.Reset()
+}
+
+func (logger *Logger) createOutputFileIfNotExists() {
+	file, err := os.Create(logger.OutputFile)
+	utils.CheckIsErrorRaised(err)
+	file.Close()
 
 // LogCustomerLost Logs when a customer leaves the store without buying
 // anything, and the total number of customers lost.
