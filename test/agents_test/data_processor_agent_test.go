@@ -3,9 +3,8 @@ package test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"../../src/agents"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_CheckoutUsageData_Creation(t *testing.T) {
@@ -108,7 +107,9 @@ func Test_ComputeAverageUtilisation(t *testing.T) {
 }
 
 func Test_IncrementLostCustomers(t *testing.T) {
-	processor := agents.DataProcessor{}
+	processor := agents.DataProcessor{
+		DataLogger: &agents.Logger{},
+	}
 	processor.IncrementLostCustomers()
 
 	assert.Equal(t, processor.LostCustomers, int64(1))

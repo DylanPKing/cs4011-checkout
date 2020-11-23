@@ -44,3 +44,16 @@ func Test_LogCheckoutUtilisation(t *testing.T) {
 
 	assert.Equal(t, actualOutput, expectedOutput)
 }
+
+func Test_LogCustomerLost(t *testing.T) {
+	logger := agents.Logger{}
+
+	logger.LogCustomerLost(int64(1))
+
+	expectedOutput := "A customer has lost their patience and left the " +
+		"store\n\tTotal customers lost: 1\n"
+
+	actualOutput := logger.OutputBuffer.String()
+
+	assert.Equal(t, actualOutput, expectedOutput)
+}
