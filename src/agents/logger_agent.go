@@ -46,9 +46,7 @@ func (logger *Logger) WriteOutputToFile() {
 	logger.createOutputFileIfNotExists()
 	bytes := []byte(logger.OutputBuffer.String())
 	err := ioutil.WriteFile(logger.OutputFile, bytes, 0644)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckIsErrorRaised(err)
 	logger.OutputBuffer.Reset()
 }
 
