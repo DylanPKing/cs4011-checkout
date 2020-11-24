@@ -4,7 +4,7 @@ package agents
 type Checkout struct {
 	ItemLimit  int
 	QueueLimit int
-	//Queue [QueueLimit]Customer
+	Queue [QueueLimit]Customer
 }
 
 // TODO: create an array of customers with a buffer of 6/ variable that is passed in? COVID
@@ -13,18 +13,24 @@ type Checkout struct {
 
 // NewCheckout creates a checkout
 func NewCheckout(itemLim int, queueLim int) *Checkout {
-	//var QueueB [QueueLimit]Customer 
+	var theQueue [QueueLimit]Customer
 	checkout := Checkout{
-		ItemLimit : itemLim
-		QueueLimit : queueLim
-		//Queue : QueueB
+		ItemLimit:  itemLim,
+		QueueLimit: queueLim,
+		Queue : theQueue,
 	}
 	return &checkout
 }
-// JoinCheckout takes in customer 
+
+// JoinCheckout takes in customer
 // TODO: add to queue array, loop and find first nil??? assign to that index
 func (checkout *Checkout) JoinCheckout(customer *Customer) {
-
+	for i = 0; i < checkout.Queue.length; i++ {
+		if checkout.Queue[i] == nil {
+			checkout[i] = customer
+			break;
+		}
+	}
 }
 
 // ServeCustomer serves a single customer
@@ -43,21 +49,26 @@ func (checkout *Checkout) ServeCustomer() {
 	// SUBTRACT BEGINNING FROM END
 
 	// If we want to add sleep for bagging and paying, add here
-	MoveQueue()
+	checkout.MoveQueue()
 	LeaveStore(current)
 }
 
 // ScanItem scans the current item for the current customer
 // TODO: Multiply a constant by weight
 func ScanItem(item *Product) {
-	
+
 }
 
 // MoveQueue removes the first customer(index 0) from the queue
 // TODO: Remove first customer
 // TODO: Move other customers up an index
 func (checkout *Checkout) MoveQueue() {
+	newQueue := [QueueLimit]Customer
 
+	for i = 1; i < checkout.Queue.length; i++ {
+		newQueue[i-1] = chechout.Queue[i]
+		checkout.Queue = newQueue
+	}
 }
 
 // LeaveStore is the customer leaving the store, and calling data processor
