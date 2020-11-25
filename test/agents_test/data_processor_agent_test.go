@@ -3,12 +3,11 @@ package test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-<<<<<<< HEAD
-=======
 
 	"../../src/agents"
->>>>>>> 6f969153db31d5472cbf139ef3e22b82da5c214b
+=======
+	"../../src/agents"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_CheckoutUsageData_Creation(t *testing.T) {
@@ -25,6 +24,9 @@ func Test_DataProcessor_Creation(t *testing.T) {
 	actualValue := agents.DataProcessor{
 		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
 		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
 	}
 
 	go func() {
@@ -51,6 +53,9 @@ func Test_averageUtlisationLoop(t *testing.T) {
 	processor := agents.DataProcessor{
 		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
 		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
 	}
 
 	go func() {
@@ -75,6 +80,42 @@ func Test_averageUtlisationLoop(t *testing.T) {
 		assert.Equal(t, avgTimePerCheckout[i], 2.0)
 		assert.Equal(t, utilisation[i], 0.25)
 	}
+}
+
+func Test_ComputeAverageUtilisation(t *testing.T) {
+	processor := agents.DataProcessor{
+		CheckoutUsage:      make(chan *agents.CheckoutUsageData),
+		AvgCheckoutUseTime: 0.0,
+		DataLogger: &agents.Logger{
+			OutputFile: "out.txt",
+		},
+	}
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			processor.CheckoutUsage <- &agents.CheckoutUsageData{
+				CheckoutNum:             i,
+				TimeSpent:               10.0,
+				TotalCustomersProcessed: 5,
+			}
+		}
+		close(processor.CheckoutUsage)
+	}()
+
+	go func() {
+		processor.ComputeAverageUtilisation()
+		_, ok := <-processor.CheckoutUsage
+		assert.Equal(t, ok, false)
+	}()
+}
+
+func Test_IncrementLostCustomers(t *testing.T) {
+	processor := agents.DataProcessor{
+		DataLogger: &agents.Logger{},
+	}
+	processor.IncrementLostCustomers()
+
+	assert.Equal(t, processor.LostCustomers, int64(1))
 }
 
 func assertCheckoutUsageData(
