@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+
+=======
 package agents
 
 import (
@@ -89,3 +92,4 @@ type CheckoutUsageData struct {
 	TimeSpent               float64
 	TotalCustomersProcessed int
 }
+>>>>>>> 6f969153db31d5472cbf139ef3e22b82da5c214b
