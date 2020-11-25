@@ -12,6 +12,7 @@ type Weather struct {
 	Conditions                 *Condition
 	CurrentCondition           string
 	Seed                       *rand.Source
+	dataProcessor              *DataProcessor
 }
 
 // Condition struct models a map of possible weather outcomes and the assocciated multipliers
@@ -20,7 +21,7 @@ type Condition struct {
 }
 
 // NewWeather creates a new Weather struct NOTE: this returns a pointer
-func NewWeather(seed *rand.Source) *Weather {
+func NewWeather(seed *rand.Source, dataProcessor *DataProcessor) *Weather {
 	// Roll for the set of conditions that the simulation will use
 	conditions := NewCondition()
 	conditions.setConditions(seed)
@@ -32,6 +33,7 @@ func NewWeather(seed *rand.Source) *Weather {
 		CustomerEntryRate:          1,
 		Seed:                       seed,
 		Conditions:                 conditions,
+		dataProcessor:              dataProcessor,
 	}
 	return &weather
 }
@@ -59,6 +61,12 @@ func (weather *Weather) ToggleWeather() {
 	weather.CustomerEntryRate = weather.Conditions.possibleConditions[weather.CurrentCondition]
 	// Incerement the number is weather changes in a given simulation
 	weather.TimesChangedToday++
+	go weather.dataProcessor.ProcessWeatherChange(
+		weather.CurrentCondition,
+		weather.CustomerPatienceMultiplier,
+		weather.CustomerEntryRate,
+		weather.TimesChangedToday,
+	)
 }
 
 // setConditions selects a one set from the available sets of weathers to chose the weather later

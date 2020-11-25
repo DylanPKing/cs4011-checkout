@@ -70,6 +70,18 @@ func (processor *DataProcessor) IncrementLostCustomers() {
 	processor.DataLogger.LogCustomerLost(processor.LostCustomers)
 }
 
+// ProcessWeatherChange receives the details of the most recetn weather change,
+// then sends it to the logger.
+func (processor *DataProcessor) ProcessWeatherChange(
+	currentCondition string, patienceMultiplier float32,
+	entryRate float32, timesChanged int,
+) {
+	processor.DataLogger.LogWeatherChange(
+		currentCondition, patienceMultiplier,
+		entryRate, timesChanged,
+	)
+}
+
 // CheckoutUsageData contains data that will be used to calculate utilisation
 // averages.
 type CheckoutUsageData struct {
