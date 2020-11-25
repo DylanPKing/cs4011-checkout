@@ -1,10 +1,16 @@
 package agents
 
+import (
+	"sync"
+)
+
 // Checkout struct with potential item limit, 5/10 and queue limit, usually 6, possibly 4 for COVID
 type Checkout struct {
 	ItemLimit  int
 	QueueLimit int
 	Queue [QueueLimit]Customer
+	CurrentQueueLen int
+	QueueLock sync.Mutex
 }
 
 // TODO: create an array of customers with a buffer of 6/ variable that is passed in? COVID
@@ -25,12 +31,18 @@ func NewCheckout(itemLim int, queueLim int) *Checkout {
 // JoinCheckout takes in customer
 // TODO: add to queue array, loop and find first nil??? assign to that index
 func (checkout *Checkout) JoinCheckout(customer *Customer) {
+	checkout.QueueLock.Lock()
+
 	for i = 0; i < checkout.Queue.length; i++ {
 		if checkout.Queue[i] == nil {
 			checkout[i] = customer
+			CurrentQueueLen++
 			break;
 		}
 	}
+
+	checkout.QueueLock.Unlock()
+
 }
 
 // ServeCustomer serves a single customer
@@ -50,7 +62,7 @@ func (checkout *Checkout) ServeCustomer() {
 
 	// If we want to add sleep for bagging and paying, add here
 	checkout.MoveQueue()
-	LeaveStore(current)
+	current.checkedOut = true
 }
 
 // ScanItem scans the current item for the current customer
@@ -63,18 +75,14 @@ func ScanItem(item *Product) {
 // TODO: Remove first customer
 // TODO: Move other customers up an index
 func (checkout *Checkout) MoveQueue() {
+	checkout.QueueLock.Lock()
 	newQueue := [QueueLimit]Customer
 
 	for i = 1; i < checkout.Queue.length; i++ {
 		newQueue[i-1] = chechout.Queue[i]
 		checkout.Queue = newQueue
 	}
-}
-
-// LeaveStore is the customer leaving the store, and calling data processor
-// TODO: Have an if statement to see if customer went through checkout or left angry
-// TODO: If through checkout send what is necessary for Dylan
-// TODO: If angry send that they were angry
-func LeaveStore(customer *Customer) {
+	CurrentQueueLen--
+	checkout.QueueLock.Unlock()
 
 }
