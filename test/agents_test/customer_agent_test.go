@@ -1,10 +1,56 @@
 package test
 
 import (
-	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
+
+	"../../src/agents"
+	"github.com/stretchr/testify/assert"
 )
 
-func customer_placeholder_test(t *testing.T) {
-	assert.Equal(t, 0, 0)
+func Test_That_RandnumGen_Generates_A_Random_Number_With_Parameter_Given(t *testing.T) {
+	//Arrange
+	dummySeed := rand.NewSource(1)
+	//Act
+	randomNum := agents.RandnumGen(&dummySeed, 10)
+	//Assert
+	assert.NotNil(t, randomNum)
+}
+
+func Test_That_NewCustomer_Creates_A_New_Customer(t *testing.T) {
+	//Arrange
+	dummySeed := rand.NewSource(1)
+	//Act
+	aCustomer := agents.NewCustomer(&dummySeed)
+	//Assert
+	assert.NotNil(t, aCustomer)
+}
+
+func Test_That_NewProduct_Creates_A_New_Product(t *testing.T) {
+	//Arrange
+	dummySeed := rand.NewSource(1)
+	//Act
+	aProduct := agents.NewProduct(&dummySeed)
+	//Assert
+	assert.NotNil(t, aProduct)
+}
+
+func Test_That_FillTrolley_Fills_A_Trolley_With_Random_Number_Of_Items_Of_Random_Weight(t *testing.T) {
+	//Arrange
+	dummySeed := rand.NewSource(1)
+	//Act
+	aTrolley := agents.FillTrolley(&dummySeed)
+	//Assert
+	assert.NotNil(t, aTrolley)
+}
+
+func Test_That_ToggleQueue_Sets_Flag_For_Customer_Queueing(t *testing.T) {
+	//Arrange
+	dummySeed := rand.NewSource(1)
+	//Expected
+	testQueue := true
+	//Actual
+	aCustomer := agents.NewCustomer(&dummySeed)
+	aCustomer.ToggleQueue()
+	assert.Equal(t, testQueue, aCustomer.Queue)
 }

@@ -5,6 +5,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Test_That_NewWeather_Creates_Struct_That_Is_Not_Nil ensures that the struct is created correctly and is not nil
