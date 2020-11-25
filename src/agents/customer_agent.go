@@ -7,6 +7,7 @@ type Customer struct {
 	Patience      float32
 	NumberOfItems []*Product
 	Queue         bool
+	checkedOut    bool
 }
 
 //Product defines a product
@@ -56,16 +57,28 @@ func (c *Customer) ToggleQueue() {
 	c.Queue = !(c.Queue)
 }
 
-//Now how does one implement
+//write a method for choosing a checkout
+func (customer *Customer) QueueCheckout(checkout *Checkout) {
+	shortestQueue := CurrentNumberOfCheckouts[0]
+	indexCheckout := 0
+	for j = 1; j < CurrentNumberOfCheckouts.len(); j++ {
+		if CurrentNumberOfCheckouts[j].Checkout.CurrentQueueLen < shortestQueue {
+			shortestQueue = CurrentNumberOfCheckouts[j]
+			indexCheckout = j
+		}
+	}
+	checkout.JoinCheckout(customer)
+	for {
+		customer.Patience--
+		//time.sleep()
+		if customer.checkedOut || customer.Patience == 0 {
+			leaveStore(customer)
+		}
 
-//Entering the store
-//Probably dealt with in the main when a new customer is called
+	}
 
-//Going to the checkout
-//when trolley is filled
-//go to checkout
-//compare queues, probably array of queues of open checkouts
-//is added to checkout for handling
+}
 
-//Leaving the store
-//to be decided
+func leaveStore(customer *Customer) {
+
+}
