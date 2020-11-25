@@ -53,21 +53,21 @@ func FillTrolley(seed *rand.Source) []*Product {
 }
 
 //ToggleQueue toggles whether customer is queueing
-func (c *Customer) ToggleQueue() {
-	c.Queue = !(c.Queue)
+func (customer *Customer) ToggleQueue() {
+	customer.Queue = !(customer.Queue)
 }
 
 //write a method for choosing a checkout
-func (customer *Customer) QueueCheckout(checkout *Checkout) {
-	shortestQueue := CurrentNumberOfCheckouts[0]
+func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
+	shortestQueue := checkouts[0]
 	indexCheckout := 0
-	for j = 1; j < CurrentNumberOfCheckouts.len(); j++ {
-		if CurrentNumberOfCheckouts[j].Checkout.CurrentQueueLen < shortestQueue {
-			shortestQueue = CurrentNumberOfCheckouts[j]
+	for j := 1; j < checkouts.len(); j++ {
+		if checkouts[j].CurrentQueueLen < shortestQueue {
+			shortestQueue = checkouts[j].CurrentQueueLen
 			indexCheckout = j
 		}
 	}
-	checkout.JoinCheckout(customer)
+	checkouts[indexCheckout].JoinCheckout(customer)
 	for {
 		customer.Patience--
 		//time.sleep()
