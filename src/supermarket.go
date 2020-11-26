@@ -25,10 +25,11 @@ func main() {
 
 	dataProcessor := agents.DataProcessor{
 		CheckoutUsage: make(chan *agents.CheckoutUsageData),
-		// CustomerData: make(chan *agents.Customer),
-		DataLogger: &logger,
+		CustomerData:  make(chan *agents.CustomerData),
+		DataLogger:    &logger,
 	}
-	go dataProcessor.ComputeAverageUtilisation()
+	go dataProcessor.ComputeAverageUtilisation(storeManager.InitialNumberOfCheckouts)
+	go dataProcessor.ProcessCustomerData()
 	weatherAgent := agents.NewWeather(&seed, &dataProcessor)
 	weatherAgent.ToggleWeather()
 
@@ -41,16 +42,34 @@ func main() {
 		} else {
 			itemLimit = 200
 		}
-		go func(i int) {
-			checkouts[i] = *agents.NewCheckout(itemLimit, storeManager.QueueLimit)
+		go func(i int, itemLimit int) {
+			checkouts[i] = *agents.NewCheckout(
+				itemLimit, storeManager.QueueLimit, i, &dataProcessor,
+			)
 			checkouts[i].ServeCustomer()
-		}(i)
+		}(i, itemLimit)
 	}
 
-	go addCustomer(&seed, &checkouts)
+	go func() {
+		for {
+			customer := agents.NewCustomer(&seed, &dataProcessor, weatherAgent)
+			go customer.QueueCheckout(&checkouts)
+			time.Sleep(
+				((time.Second) * time.Duration(weatherAgent.CustomerEntryRate)) / 720,
+			)
+		}
+	}()
 
 	startTime := time.Now()
 	endTime := startTime.Add(time.Minute * 1)
+
+	go func() {
+		for {
+			time.Sleep(time.Second * time.Duration((rand.Int()*5)+10))
+			weatherAgent.ToggleWeather()
+		}
+	}()
+
 	for {
 		now := time.Now()
 		if now.After(endTime) {
@@ -59,12 +78,4 @@ func main() {
 	}
 
 	logger.WriteOutputToFile()
-}
-
-func addCustomer(seed *rand.Source, checkouts *[]agents.Checkout) {
-	for {
-		customer := agents.NewCustomer(seed)
-		customer.QueueCheckout(checkouts)
-	}
-
 }

@@ -26,10 +26,18 @@ func NewManager() *Manager {
 // StartCheckouts asks the user to initialise the number of checkouts.
 func (manager *Manager) StartCheckouts() {
 	for {
-		manager.InitialNumberOfCheckouts = UserInputInt("Please input the initial number of operating checkouts [1-8]")
-		manager.NumberOfExpressCheckouts = UserInputInt("Please input the number of express checkouts(no more than 5 items)")
-		manager.NumberOfExpressItems = UserInputInt("Please enter the amount of items allowed at the express checkouts: ")
-		manager.QueueLimit = UserInputInt("Please enter  the limit of customers for each queue: ")
+		manager.InitialNumberOfCheckouts = UserInputInt(
+			"Please input the initial number of operating checkouts [1-8]", 1, 8,
+		)
+		manager.NumberOfExpressCheckouts = UserInputInt(
+			"Please input the number of express checkouts(no more than 5 items) [0-Total number of checkouts]", 0, manager.InitialNumberOfCheckouts,
+		)
+		manager.NumberOfExpressItems = UserInputInt(
+			"Please enter the amount of items allowed at the express checkouts: [5-20]", 5, 20,
+		)
+		manager.QueueLimit = UserInputInt(
+			"Please enter the limit of customers for each queue: [3-8]", 3, 8,
+		)
 		if manager.NumberOfExpressCheckouts > manager.InitialNumberOfCheckouts {
 			fmt.Println("You can't have more express checkouts than there are total checkouts dingus...\nTry to put in some logical values ya?")
 			continue
@@ -39,7 +47,7 @@ func (manager *Manager) StartCheckouts() {
 }
 
 // UserInputInt asks the user to input an int to use as an initial value
-func UserInputInt(text string) int {
+func UserInputInt(text string, lowerLimit int, upperLimit int) int {
 	regex, _ := regexp.Compile("[[:digit:]]{1}")
 	var userInput string
 	var number int
@@ -64,7 +72,7 @@ func UserInputInt(text string) int {
 			continue
 		}
 		// Check for range
-		if 1 > inputNumber || inputNumber > 8 {
+		if lowerLimit > inputNumber || inputNumber > upperLimit {
 			fmt.Println("*sigh*...\nThe instructions literally told you what range to USE!\nWhy would you even try that?...\nBack to the top you go. Try to do it properly this time.")
 			continue
 		}

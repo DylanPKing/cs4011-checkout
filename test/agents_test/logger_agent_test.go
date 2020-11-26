@@ -24,25 +24,25 @@ func Test_LogCheckoutUtilisation(t *testing.T) {
 		utilisation[i] = 0.25
 	}
 
-	expectedOutput := "Total utilisation of each checkout:\n" +
-		"\tCheckout 0: 10.000000\n" +
-		"\tCheckout 1: 10.000000\n" +
-		"\tCheckout 2: 10.000000\n" +
-		"\tCheckout 3: 10.000000\n" +
+	expectedOutput := "\n\nTotal time spent at each checkout:\n" +
+		"\tCheckout 0: 10.00s\n" +
+		"\tCheckout 1: 10.00s\n" +
+		"\tCheckout 2: 10.00s\n" +
+		"\tCheckout 3: 10.00s\n" +
 		"Average time spent at each checkout:\n" +
-		"\tCheckout 0: 2.000000\n" +
-		"\tCheckout 1: 2.000000\n" +
-		"\tCheckout 2: 2.000000\n" +
-		"\tCheckout 3: 2.000000\n" +
+		"\tCheckout 0: 2.00s\n" +
+		"\tCheckout 1: 2.00s\n" +
+		"\tCheckout 2: 2.00s\n" +
+		"\tCheckout 3: 2.00s\n" +
 		"Percent utilisation of each checkout:\n" +
-		"\tCheckout 0: 0.250000\n" +
-		"\tCheckout 1: 0.250000\n" +
-		"\tCheckout 2: 0.250000\n" +
-		"\tCheckout 3: 0.250000\n"
+		"\tCheckout 0: 25.00%\n" +
+		"\tCheckout 1: 25.00%\n" +
+		"\tCheckout 2: 25.00%\n" +
+		"\tCheckout 3: 25.00%\n"
 
 	logger.LogCheckoutUtlisation(total, avg, utilisation)
 
-	actualOutput := logger.OutputBuffer.String()
+	actualOutput := logger.UtilisationBuffer.String()
 
 	assert.Equal(t, actualOutput, expectedOutput)
 }
@@ -56,7 +56,7 @@ func Test_WriteOutputToFile(t *testing.T) {
 
 	expectedOutput := "Test output"
 
-	logger.OutputBuffer.WriteString(expectedOutput)
+	logger.UtilisationBuffer.WriteString(expectedOutput)
 
 	logger.WriteOutputToFile()
 
@@ -73,10 +73,9 @@ func Test_LogCustomerLost(t *testing.T) {
 
 	logger.LogCustomerLost(int64(1))
 
-	expectedOutput := "A customer has lost their patience and left the " +
-		"store\n\tTotal customers lost: 1\n"
+	expectedOutput := "\n\nTotal customers lost: 1\n"
 
-	actualOutput := logger.OutputBuffer.String()
+	actualOutput := logger.LostCustomerBuffer.String()
 
 	assert.Equal(t, actualOutput, expectedOutput)
 }
@@ -86,12 +85,12 @@ func Test_LogWeatherChange(t *testing.T) {
 
 	logger.LogWeatherChange("TestCondition", 1.0, 1.0, 1)
 
-	expectedOutput := "The weather has changed to TestCondition.\n" +
+	expectedOutput := "\n\nThe weather has changed to TestCondition.\n" +
 		"\tNew customer patience multipler: 1.00\n" +
 		"\tNew customer entry rate: 1.00\n" +
 		"\tTotal times weather has changed: 1\n"
 
-	actualOutput := logger.OutputBuffer.String()
+	actualOutput := logger.WeatherChangeBuffer.String()
 
 	assert.Equal(t, actualOutput, expectedOutput)
 }

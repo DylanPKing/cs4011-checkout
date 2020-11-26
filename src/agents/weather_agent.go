@@ -80,23 +80,23 @@ func (conditions *Condition) setConditions(seed *rand.Source) {
 	// The normal day package
 	set1 := make(map[string]float32)
 	set1["Sunny"] = 1.0 // base stats
-	set1["Overcast"] = 0.8
-	set1["Shower"] = 0.7
-	set1["Strong Rain"] = 1.25
+	set1["Overcast"] = 1.2
+	set1["Shower"] = 1.3
+	set1["Strong Rain"] = 0.75
 
 	// The rainy day package
 	set2 := make(map[string]float32)
-	set2["Lashing"] = 1.25
-	set2["Thunderstorm"] = 1.5
-	set2["Shower"] = 0.7
+	set2["Lashing"] = 0.75
+	set2["Thunderstorm"] = 0.5
+	set2["Shower"] = 1.3
 	set2["Cloudy"] = 1.0
 
 	// The winter day package
 	set3 := make(map[string]float32)
-	set3["Foggy"] = 1.1
-	set3["Snowing"] = 1.3
-	set3["Blizzard"] = 1.5
-	set3["Snow and Rain"] = 1.4
+	set3["Foggy"] = 0.9
+	set3["Snowing"] = 0.7
+	set3["Blizzard"] = 0.5
+	set3["Snow and Rain"] = 0.6
 
 	// Select a random set
 	setsArray := [3]map[string]float32{

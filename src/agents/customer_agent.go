@@ -3,6 +3,7 @@ package agents
 import (
 	"math/rand"
 	"sync/atomic"
+	"time"
 )
 
 //Customer defines a customer
@@ -11,6 +12,9 @@ type Customer struct {
 	NumberOfItems []*Product
 	Queue         bool
 	checkedOut    bool
+	dataProcessor *DataProcessor
+	TotalWaitTime float32
+	WeatherAgent  *Weather
 }
 
 //Product defines a product
@@ -25,20 +29,22 @@ func RandnumGen(seed *rand.Source, num int) int {
 }
 
 // NewCustomer creates a new customer
-func NewCustomer(seed *rand.Source) *Customer {
-	p := float32(RandnumGen(seed, 10))
+func NewCustomer(seed *rand.Source, processor *DataProcessor, weather *Weather) *Customer {
+	p := ((rand.Float32() * 10) + 3) * weather.CustomerPatienceMultiplier
 	t := FillTrolley(seed)
 	customer := Customer{
 		Patience:      p,
 		NumberOfItems: t,
 		Queue:         false,
+		dataProcessor: processor,
+		WeatherAgent:  weather,
 	}
 	return &customer
 }
 
 //NewProduct returns a product
 func NewProduct(seed *rand.Source) *Product {
-	w := float32(RandnumGen(seed, 12) + 1)
+	w := (rand.Float32() * 12) + 1.0
 	product := Product{
 		Weight: w,
 	}
@@ -66,7 +72,8 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 	indexCheckout := 0
 	for {
 		for j := 1; j < len(*checkouts); j++ {
-			if (*checkouts)[j].CurrentQueueLen < shortestQueueLength {
+			if (*checkouts)[j].CurrentQueueLen < shortestQueueLength &&
+				len(customer.NumberOfItems) <= (*checkouts)[j].ItemLimit {
 				shortestQueueLength = (*checkouts)[j].CurrentQueueLen
 				indexCheckout = j
 			}
@@ -76,20 +83,42 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 			atomic.AddInt64(&(*checkouts)[indexCheckout].CurrentQueueLen, 1)
 			break
 		} else {
-			customer.Patience--
-			//time.Sleep()
+			customer.Patience -= (2 * customer.WeatherAgent.CustomerPatienceMultiplier)
+			time.Sleep(time.Duration(time.Second / 720))
+			if customer.Patience <= 0 {
+				leaveStore(customer, false)
+				return
+			}
 		}
 	}
+	startTime := time.Now().Unix()
 	for {
-		customer.Patience -= 0.25
-		//time.Sleep()
-		if customer.checkedOut || customer.Patience == 0 {
-			leaveStore(customer)
+		customer.Patience -= (2 * customer.WeatherAgent.CustomerPatienceMultiplier)
+		time.Sleep(
+			(time.Second * (time.Duration(len(customer.NumberOfItems))) * 2) / 720,
+		)
+		if customer.checkedOut {
+			endTime := time.Now().Unix()
+			customer.TotalWaitTime = float32(endTime - startTime)
+			leaveStore(customer, true)
+			break
+		} else if customer.Patience <= 0 {
+			endTime := time.Now().Unix()
+			customer.TotalWaitTime = float32(endTime - startTime)
+			leaveStore(customer, false)
+			break
 		}
-
 	}
 }
 
-func leaveStore(customer *Customer) {
-
+func leaveStore(customer *Customer, happy bool) {
+	if happy {
+		customerData := CustomerData{
+			NumberOfItems: len(customer.NumberOfItems),
+			TotalWaitTime: float64(customer.TotalWaitTime),
+		}
+		customer.dataProcessor.CustomerData <- &customerData
+	} else {
+		go customer.dataProcessor.IncrementLostCustomers()
+	}
 }
