@@ -36,7 +36,7 @@ func NewWeather(seed *rand.Source) *Weather {
 	return &weather
 }
 
-// newCondition creates a new condition struct to hold the possible weather conditions
+// NewCondition creates a new condition struct to hold the possible weather conditions
 func NewCondition() *Condition {
 	// Create an empty struct here and populate when creating the weather agent
 	conditions := Condition{}

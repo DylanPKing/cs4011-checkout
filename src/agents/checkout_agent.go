@@ -3,6 +3,7 @@ package agents
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // Checkout struct with potential item limit, 5/10 and queue limit, usually 6, possibly 4 for COVID
@@ -25,23 +26,6 @@ func NewCheckout(itemLim int, queueLim int) *Checkout {
 	return &checkout
 }
 
-// JoinCheckout takes in customer
-// TODO: move this to Brian and update
-// func (checkout *Checkout) JoinCheckout(customer *Customer) {
-// 	checkout.QueueLock.Lock()
-
-// 	for i = 0; i < checkout.Queue.length; i++ {
-// 		if checkout.Queue[i] == nil {
-// 			checkout[i] = customer
-// 			CurrentQueueLen++
-// 			break
-// 		}
-// 	}
-
-// 	checkout.QueueLock.Unlock()
-
-// }
-
 // ServeCustomer serves a single customer
 // TODO: Take in first customer
 // TODO: Loop through the item array
@@ -55,7 +39,7 @@ func (checkout *Checkout) ServeCustomer() {
 		customer, ok := <-checkout.Queue
 		if ok {
 			atomic.AddInt64(&checkout.CurrentQueueLen, -1)
-			for i, v := range customer.Trolley {
+			for _, v := range customer.NumberOfItems {
 				ScanItem(v)
 			}
 			// If we want to add sleep for bagging and paying, add here
@@ -69,5 +53,5 @@ func (checkout *Checkout) ServeCustomer() {
 // ScanItem scans the current item for the current customer
 // TODO: Multiply a constant by weight
 func ScanItem(item *Product) {
-
+	time.Sleep()
 }
