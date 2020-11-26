@@ -3,6 +3,7 @@ package agents
 import (
 	"math/rand"
 	"sync/atomic"
+	"time"
 )
 
 //Customer defines a customer
@@ -67,7 +68,7 @@ func (customer *Customer) ToggleQueue() {
 func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 	shortestQueueLength := (*checkouts)[0].CurrentQueueLen
 	indexCheckout := 0
-	// time.start()
+	startTime := time.Now().Unix()
 	for {
 		for j := 1; j < len(*checkouts); j++ {
 			if (*checkouts)[j].CurrentQueueLen < shortestQueueLength {
@@ -76,18 +77,16 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 			}
 		}
 		if int(shortestQueueLength) < (*checkouts)[indexCheckout].QueueLimit {
-			// time.stop()
-			// get time spent waiting
 			(*checkouts)[indexCheckout].Queue <- customer
 			atomic.AddInt64(&(*checkouts)[indexCheckout].CurrentQueueLen, 1)
 			break
 		} else {
 			customer.Patience--
 			if customer.Patience <= 0 {
-				// time.stop()
-				// get time spent waiting
+				endTime := time.Now().Unix()
+				customer.TotalWaitTime = int(endTime - startTime)
 				leaveStore(customer)
-				break
+				return
 			}
 			//time.Sleep()
 		}
@@ -96,14 +95,16 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 		customer.Patience -= 0.25
 		//time.Sleep()
 		if customer.checkedOut || customer.Patience <= 0 {
+			endTime := time.Now().Unix()
+			customer.TotalWaitTime = int(endTime - startTime)
 			leaveStore(customer)
 			break
 		}
-
 	}
 }
 
 func leaveStore(customer *Customer) {
 	// data processor here
+	customer.dataProcessor.CustomerData <- *customer
 
 }

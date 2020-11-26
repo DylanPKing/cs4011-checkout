@@ -96,5 +96,27 @@ func (logger *Logger) LogWeatherChange(
 }
 
 func (logger *Logger) LogCustomerData(
-	
-)
+	totalProductsProcessed int, averageProductsPerTrolley int,
+	averageWaitTime int, waitTimeforCustomer int,
+) {
+	var output strings.Builder
+
+	output.WriteString(
+		fmt.Sprintf(
+			"Wait time for current customer: %ds\n", waitTimeforCustomer,
+		),
+	)
+	output.WriteString(
+		fmt.Sprintf("Total products processed: %ds\n", totalProductsProcessed),
+	)
+	output.WriteString(
+		fmt.Sprintf(
+			"Average products per trolley: %ds\n", averageProductsPerTrolley,
+		)
+	)
+	output.WriteString(
+		fmt.Sprintf("Averafe wait time for a customer: %ds\n", averageWaitTime),
+	)
+	fmt.Print(output.String())
+	logger.OutputBuffer.WriteString(output.String())
+}

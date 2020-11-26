@@ -86,13 +86,19 @@ func (processor *DataProcessor) ProcessWeatherChange(
 func (processor *DataProcessor) ProcessCustomerData() {
 	totalProductsProcessed := 0
 	totalCustomers := 0
+	totalWaitTime := 0
 	for {
 		customer, ok := <-processor.CustomerData
 		if ok {
 			totalCustomers++
 			totalProductsProcessed += len(customer.NumberOfItems)
 			averageProductsPerTrolley := totalProductsProcessed / totalCustomers
-
+			totalWaitTime += customer.TotalWaitTime
+			averageWaitTime := totalWaitTime / totalCustomers
+			processor.DataLogger.LogCustomerData(
+				totalProductsProcessed, averageProductsPerTrolley,
+				averageWaitTime, customer.TotalWaitTime,
+			)
 		}
 	}
 }
