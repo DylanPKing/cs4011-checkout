@@ -1,6 +1,9 @@
 package agents
 
-import "math/rand"
+import (
+	"math/rand"
+	"sync/atomic"
+)
 
 //Customer defines a customer
 type Customer struct {
@@ -57,26 +60,34 @@ func (customer *Customer) ToggleQueue() {
 	customer.Queue = !(customer.Queue)
 }
 
-//write a method for choosing a checkout
+//QueueCheckout is for queueing at a checkout
 func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
-	shortestQueue := checkouts[0]
+	shortestQueueLength := (*checkouts)[0].CurrentQueueLen
 	indexCheckout := 0
-	for j := 1; j < checkouts.len(); j++ {
-		if checkouts[j].CurrentQueueLen < shortestQueue {
-			shortestQueue = checkouts[j].CurrentQueueLen
-			indexCheckout = j
+	for {
+		for j := 1; j < len(*checkouts); j++ {
+			if (*checkouts)[j].CurrentQueueLen < shortestQueueLength {
+				shortestQueueLength = (*checkouts)[j].CurrentQueueLen
+				indexCheckout = j
+			}
+		}
+		if int(shortestQueueLength) < (*checkouts)[indexCheckout].QueueLimit {
+			(*checkouts)[indexCheckout].Queue <- customer
+			atomic.AddInt64(&(*checkouts)[indexCheckout].CurrentQueueLen, 1)
+			break
+		} else {
+			customer.Patience--
+			//time.Sleep()
 		}
 	}
-	checkouts[indexCheckout].JoinCheckout(customer)
 	for {
-		customer.Patience--
-		//time.sleep()
+		customer.Patience -= 0.25
+		//time.Sleep()
 		if customer.checkedOut || customer.Patience == 0 {
 			leaveStore(customer)
 		}
 
 	}
-
 }
 
 func leaveStore(customer *Customer) {
