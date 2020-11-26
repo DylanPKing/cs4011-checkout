@@ -81,3 +81,18 @@ func Test_ToggleWeather_Increments_TimesChangedToday(t *testing.T) {
 	assert.NotEqual(t, weatherAgent.TimesChangedToday, weatherAgent2.TimesChangedToday)
 	assert.Equal(t, 1, weatherAgent.TimesChangedToday)
 }
+
+// Test_That_ToggleWeather_Only_Toggles_TimesChangedLimit_Times test that toggling the weather can only occur as many times as TimesChangedLimit allows
+func Test_That_ToggleWeather_Only_Toggles_TimesChangedLimit_Times(t *testing.T) {
+	// Arrange
+	dummySeed := rand.NewSource(1)
+
+	// Act
+	weatherAgent := agents.NewWeather(&dummySeed)
+	// Deliberatelly iterating one more time than the limit to prove that the weather is not toggled an extra time
+	for i := 0; i < weatherAgent.TimesChangedLimit+1; i++ {
+		weatherAgent.ToggleWeather()
+	}
+	// Assert
+	assert.Equal(t, weatherAgent.TimesChangedLimit, weatherAgent.TimesChangedToday)
+}

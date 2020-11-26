@@ -7,6 +7,7 @@ import (
 // Weather struct that models the weather agent in our application
 type Weather struct {
 	TimesChangedToday          int
+	TimesChangedLimit          int
 	CustomerPatienceMultiplier float32
 	CustomerEntryRate          float32
 	Conditions                 *Condition
@@ -29,6 +30,7 @@ func NewWeather(seed *rand.Source, dataProcessor *DataProcessor) *Weather {
 	// Create the struct
 	weather := Weather{
 		TimesChangedToday:          0,
+		TimesChangedLimit:          3,
 		CustomerPatienceMultiplier: 1,
 		CustomerEntryRate:          1,
 		Seed:                       seed,
@@ -47,10 +49,14 @@ func NewCondition() *Condition {
 
 // ToggleWeather tries to change the current weather to a random weather from the chosen set of possible conditions
 func (weather *Weather) ToggleWeather() {
+	if weather.TimesChangedToday >= weather.TimesChangedLimit {
+		// If needed we can give some data to the data processor from here :)
+		return
+	}
 	var conditionsArray []string
 	randomCondition := (rand.New(*weather.Seed)).Intn(4)
 
-	// Since I can't really index a map, I'm using an array to hold a copy of each key for wasy access
+	// Since I can't really index a map, I'm using an array to hold a copy of each key for easy access
 	for i := range weather.Conditions.possibleConditions {
 		conditionsArray = append(conditionsArray, i)
 	}
