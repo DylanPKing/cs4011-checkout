@@ -2,48 +2,45 @@ package agents
 
 import (
 	"sync"
+	"sync/atomic"
 )
 
 // Checkout struct with potential item limit, 5/10 and queue limit, usually 6, possibly 4 for COVID
 type Checkout struct {
-	ItemLimit  int
-	QueueLimit int
-	Queue [QueueLimit]Customer
-	CurrentQueueLen int
-	QueueLock sync.Mutex
+	ItemLimit       int
+	QueueLimit      int
+	Queue           chan *Customer
+	CurrentQueueLen int64
+	QueueLock       sync.Mutex
 }
-
-// TODO: create an array of customers with a buffer of 6/ variable that is passed in? COVID
-// TODO: be able to scan items, time/speed, multiplied by the item size multiplier
-// TODO: check the time it took for each customer
 
 // NewCheckout creates a checkout
 func NewCheckout(itemLim int, queueLim int) *Checkout {
-	var theQueue [QueueLimit]Customer
+	var theQueue = make(chan *Customer)
 	checkout := Checkout{
 		ItemLimit:  itemLim,
 		QueueLimit: queueLim,
-		Queue : theQueue,
+		Queue:      theQueue,
 	}
 	return &checkout
 }
 
 // JoinCheckout takes in customer
-// TODO: add to queue array, loop and find first nil??? assign to that index
-func (checkout *Checkout) JoinCheckout(customer *Customer) {
-	checkout.QueueLock.Lock()
+// TODO: move this to Brian and update
+// func (checkout *Checkout) JoinCheckout(customer *Customer) {
+// 	checkout.QueueLock.Lock()
 
-	for i = 0; i < checkout.Queue.length; i++ {
-		if checkout.Queue[i] == nil {
-			checkout[i] = customer
-			CurrentQueueLen++
-			break;
-		}
-	}
+// 	for i = 0; i < checkout.Queue.length; i++ {
+// 		if checkout.Queue[i] == nil {
+// 			checkout[i] = customer
+// 			CurrentQueueLen++
+// 			break
+// 		}
+// 	}
 
-	checkout.QueueLock.Unlock()
+// 	checkout.QueueLock.Unlock()
 
-}
+// }
 
 // ServeCustomer serves a single customer
 // TODO: Take in first customer
@@ -52,37 +49,25 @@ func (checkout *Checkout) JoinCheckout(customer *Customer) {
 // TODO: Shift all customers up 1 index in array/space in queue
 // TODO: Pass info to Dylan's data processor
 func (checkout *Checkout) ServeCustomer() {
-	// BEGINNING TIME
-	current := Queue[0] //current is customer
-	for i, v := range current.Trolley {
-		ScanItem(v)
-	}
-	// END TIME
-	// SUBTRACT BEGINNING FROM END
 
-	// If we want to add sleep for bagging and paying, add here
-	checkout.MoveQueue()
-	current.checkedOut = true
+	for {
+		// BEGINNING TIME
+		customer, ok := <-checkout.Queue
+		if ok {
+			atomic.AddInt64(&checkout.CurrentQueueLen, -1)
+			for i, v := range customer.Trolley {
+				ScanItem(v)
+			}
+			// If we want to add sleep for bagging and paying, add here
+			customer.checkedOut = true
+		}
+		// END TIME
+		// SUBTRACT BEGINNING FROM END
+	}
 }
 
 // ScanItem scans the current item for the current customer
 // TODO: Multiply a constant by weight
 func ScanItem(item *Product) {
-
-}
-
-// MoveQueue removes the first customer(index 0) from the queue
-// TODO: Remove first customer
-// TODO: Move other customers up an index
-func (checkout *Checkout) MoveQueue() {
-	checkout.QueueLock.Lock()
-	newQueue := [QueueLimit]Customer
-
-	for i = 1; i < checkout.Queue.length; i++ {
-		newQueue[i-1] = chechout.Queue[i]
-		checkout.Queue = newQueue
-	}
-	CurrentQueueLen--
-	checkout.QueueLock.Unlock()
 
 }
