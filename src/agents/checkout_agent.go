@@ -3,7 +3,7 @@ package agents
 import (
 	"sync"
 	"sync/atomic"
-	"time"
+	//"time"
 )
 
 // Checkout struct with potential item limit, 5/10 and queue limit, usually 6, possibly 4 for COVID
@@ -53,5 +53,5 @@ func (checkout *Checkout) ServeCustomer() {
 // ScanItem scans the current item for the current customer
 // TODO: Multiply a constant by weight
 func ScanItem(item *Product) {
-	time.Sleep()
+	//time.Sleep()
 }
