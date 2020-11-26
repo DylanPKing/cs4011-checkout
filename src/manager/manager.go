@@ -13,6 +13,8 @@ import (
 type Manager struct {
 	InitialNumberOfCheckouts int
 	NumberOfExpressCheckouts int
+	NumberOfExpressItems     int
+	QueueLimit               int
 }
 
 // NewManager creates a new manager struct
@@ -26,6 +28,8 @@ func (manager *Manager) StartCheckouts() {
 	for {
 		manager.InitialNumberOfCheckouts = UserInputInt("Please input the initial number of operating checkouts [1-8]")
 		manager.NumberOfExpressCheckouts = UserInputInt("Please input the number of express checkouts(no more than 5 items)")
+		manager.NumberOfExpressItems = UserInputInt("Please enter the amount of items allowed at the express checkouts: ")
+		manager.QueueLimit = UserInputInt("Please enter  the limit of customers for each queue: ")
 		if manager.NumberOfExpressCheckouts > manager.InitialNumberOfCheckouts {
 			fmt.Println("You can't have more express checkouts than there are total checkouts dingus...\nTry to put in some logical values ya?")
 			continue

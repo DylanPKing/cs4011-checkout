@@ -26,18 +26,43 @@ func main() {
 		// CustomerData: make(chan *agents.Customer),
 		DataLogger: &logger,
 	}
-
+	dataProcessor.ComputeAverageUtilisation()
 	weatherAgent := agents.NewWeather(&seed, &dataProcessor)
 	weatherAgent.ToggleWeather()
-	// Weather agent legend
-	// You can get the following information from the weather agent:
-	// TimesChangedToday          int
-	// CustomerPatienceMultiplier float32
-	// CustomerEntryRate          float32
-	// Conditions                 *Condition
-	// CurrentCondition           string
-	// Seed                       *rand.Source
-	// NOTE: The purpose of Seed in the model is to eliminate some of the passing around of the seed value as a paramater - speciffically the ToggleWeather function
+
+	// Set up checkouts
+	checkouts := make([]agents.Checkout, storeManager.InitialNumberOfCheckouts)
+	var itemLimit int
+	for i := 0; i < storeManager.InitialNumberOfCheckouts; i++ {
+		if i < storeManager.NumberOfExpressCheckouts {
+			itemLimit = storeManager.NumberOfExpressItems
+		} else {
+			itemLimit = 200
+		}
+		go func(i int) {
+			checkouts[i] = *agents.NewCheckout(itemLimit, storeManager.QueueLimit)
+			checkouts[i].ServeCustomer()
+		}(i)
+	}
+
+	go addCustomer(&seed, &checkouts)
+
+	startTime := time.Now()
+	endTime := startTime.Add(time.Minute * 1)
+	for {
+		now := time.Now()
+		if now.After(endTime) {
+			break
+		}
+	}
 
 	logger.WriteOutputToFile()
+}
+
+func addCustomer(seed *rand.Source, checkouts *[]agents.Checkout) {
+	for {
+		customer := agents.NewCustomer(seed)
+		customer.QueueCheckout(checkouts)
+	}
+
 }
