@@ -9,8 +9,7 @@ import (
 // DataProcessor collects and performs calculations on data
 // before sending data to the Logger
 type DataProcessor struct {
-	CheckoutUsage chan *CheckoutUsageData
-	// CustomerData       chan *Customer
+	CheckoutUsage      chan *CheckoutUsageData
 	AvgCheckoutUseTime float64
 	DataLogger         *Logger
 	LostCustomers      int64

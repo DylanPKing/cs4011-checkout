@@ -1,24 +1,25 @@
 package agents
 
 import (
-	"sync"
 	"sync/atomic"
-	"time"
 )
 
 // Checkout struct with potential item limit, 5/10 and queue limit, usually 6, possibly 4 for COVID
 type Checkout struct {
-	ItemLimit       int
-	QueueLimit      int
-	Queue           chan *Customer
-	CurrentQueueLen int64
-	QueueLock       sync.Mutex
+	Number                  int
+	ItemLimit               int
+	QueueLimit              int
+	Queue                   chan *Customer
+	CurrentQueueLen         int64
+	TotalCustomersProcessed int
+	processor               *DataProcessor
 }
 
 // NewCheckout creates a checkout
-func NewCheckout(itemLim int, queueLim int) *Checkout {
+func NewCheckout(itemLim int, queueLim int, number int) *Checkout {
 	var theQueue = make(chan *Customer)
 	checkout := Checkout{
+		Number:     number,
 		ItemLimit:  itemLim,
 		QueueLimit: queueLim,
 		Queue:      theQueue,
@@ -44,6 +45,13 @@ func (checkout *Checkout) ServeCustomer() {
 			}
 			// If we want to add sleep for bagging and paying, add here
 			customer.checkedOut = true
+			checkout.TotalCustomersProcessed++
+			data := &CheckoutUsageData{
+				CheckoutNum: checkout.Number,
+				// TimeSpent: time,
+				TotalCustomersProcessed: checkout.TotalCustomersProcessed,
+			}
+			checkout.processor.CheckoutUsage <- data
 		}
 		// END TIME
 		// SUBTRACT BEGINNING FROM END
@@ -53,5 +61,5 @@ func (checkout *Checkout) ServeCustomer() {
 // ScanItem scans the current item for the current customer
 // TODO: Multiply a constant by weight
 func ScanItem(item *Product) {
-	time.Sleep()
+	// time.Sleep()
 }

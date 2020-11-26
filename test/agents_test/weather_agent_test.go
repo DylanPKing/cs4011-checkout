@@ -1,11 +1,10 @@
 package test
 
 import (
-	"../../src/agents"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
 
+	"../../src/agents"
 	"github.com/stretchr/testify/assert"
 )
 

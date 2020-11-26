@@ -11,6 +11,7 @@ type Customer struct {
 	NumberOfItems []*Product
 	Queue         bool
 	checkedOut    bool
+	dataProcessor *DataProcessor
 }
 
 //Product defines a product
@@ -25,13 +26,14 @@ func RandnumGen(seed *rand.Source, num int) int {
 }
 
 // NewCustomer creates a new customer
-func NewCustomer(seed *rand.Source) *Customer {
+func NewCustomer(seed *rand.Source, processor *DataProcessor) *Customer {
 	p := float32(RandnumGen(seed, 10))
 	t := FillTrolley(seed)
 	customer := Customer{
 		Patience:      p,
 		NumberOfItems: t,
 		Queue:         false,
+		dataProcessor: processor,
 	}
 	return &customer
 }
@@ -64,6 +66,7 @@ func (customer *Customer) ToggleQueue() {
 func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 	shortestQueueLength := (*checkouts)[0].CurrentQueueLen
 	indexCheckout := 0
+	// time.start()
 	for {
 		for j := 1; j < len(*checkouts); j++ {
 			if (*checkouts)[j].CurrentQueueLen < shortestQueueLength {
@@ -72,24 +75,33 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 			}
 		}
 		if int(shortestQueueLength) < (*checkouts)[indexCheckout].QueueLimit {
+			// time.stop()
+			// get time spen waiting
 			(*checkouts)[indexCheckout].Queue <- customer
 			atomic.AddInt64(&(*checkouts)[indexCheckout].CurrentQueueLen, 1)
 			break
 		} else {
 			customer.Patience--
+			if customer.Patience <= 0 {
+				// time.stop()
+				// get time spent waiting
+				leaveStore(customer)
+				break
+			}
 			//time.Sleep()
 		}
 	}
 	for {
 		customer.Patience -= 0.25
 		//time.Sleep()
-		if customer.checkedOut || customer.Patience == 0 {
+		if customer.checkedOut || customer.Patience <= 0 {
 			leaveStore(customer)
+			break
 		}
 
 	}
 }
 
 func leaveStore(customer *Customer) {
-
+	// data processor here
 }
