@@ -9,10 +9,12 @@ import (
 // DataProcessor collects and performs calculations on data
 // before sending data to the Logger
 type DataProcessor struct {
-	CheckoutUsage      chan *CheckoutUsageData
-	AvgCheckoutUseTime float64
-	DataLogger         *Logger
-	LostCustomers      int64
+	CheckoutUsage          chan *CheckoutUsageData
+	CustomerData           chan Customer
+	AvgCheckoutUseTime     float64
+	DataLogger             *Logger
+	LostCustomers          int64
+	totalProductsProcessed int64
 }
 
 // ComputeAverageUtilisation collects the total usage of each checkout and
@@ -79,6 +81,20 @@ func (processor *DataProcessor) ProcessWeatherChange(
 		currentCondition, patienceMultiplier,
 		entryRate, timesChanged,
 	)
+}
+
+func (processor *DataProcessor) ProcessCustomerData() {
+	totalProductsProcessed := 0
+	totalCustomers := 0
+	for {
+		customer, ok := <-processor.CustomerData
+		if ok {
+			totalCustomers++
+			totalProductsProcessed += len(customer.NumberOfItems)
+			averageProductsPerTrolley := totalProductsProcessed / totalCustomers
+
+		}
+	}
 }
 
 // CheckoutUsageData contains data that will be used to calculate utilisation

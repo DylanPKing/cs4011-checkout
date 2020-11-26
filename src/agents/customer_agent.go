@@ -12,6 +12,7 @@ type Customer struct {
 	Queue         bool
 	checkedOut    bool
 	dataProcessor *DataProcessor
+	TotalWaitTime int
 }
 
 //Product defines a product
@@ -76,7 +77,7 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 		}
 		if int(shortestQueueLength) < (*checkouts)[indexCheckout].QueueLimit {
 			// time.stop()
-			// get time spen waiting
+			// get time spent waiting
 			(*checkouts)[indexCheckout].Queue <- customer
 			atomic.AddInt64(&(*checkouts)[indexCheckout].CurrentQueueLen, 1)
 			break
@@ -104,4 +105,5 @@ func (customer *Customer) QueueCheckout(checkouts *[]Checkout) {
 
 func leaveStore(customer *Customer) {
 	// data processor here
+
 }

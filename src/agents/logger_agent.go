@@ -94,3 +94,7 @@ func (logger *Logger) LogWeatherChange(
 	fmt.Print(output.String())
 	logger.OutputBuffer.WriteString(output.String())
 }
+
+func (logger *Logger) LogCustomerData(
+	
+)
