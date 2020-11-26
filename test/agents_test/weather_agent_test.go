@@ -53,7 +53,8 @@ func Test_ToggleWeather_Toggles_Weather(t *testing.T) {
 	// Two seeds with the same source return the same sequence of numbers
 	dummySeed := rand.NewSource(1)
 	dummySeed2 := rand.NewSource(1)
-	dummyDataProcessor := agents.DataProcessor{}
+	dummyLogger := agents.Logger{}
+	dummyDataProcessor := agents.DataProcessor{DataLogger: &dummyLogger}
 
 	// Act
 	weatherAgent1 := agents.NewWeather(&dummySeed, &dummyDataProcessor)
@@ -70,7 +71,8 @@ func Test_ToggleWeather_Increments_TimesChangedToday(t *testing.T) {
 	// Two seeds with the same source return the same sequence of numbers
 	dummySeed := rand.NewSource(1)
 	dummySeed2 := rand.NewSource(1)
-	dummyDataProcessor := agents.DataProcessor{}
+	dummyLogger := agents.Logger{}
+	dummyDataProcessor := agents.DataProcessor{DataLogger: &dummyLogger}
 
 	// Act
 	weatherAgent := agents.NewWeather(&dummySeed, &dummyDataProcessor)
@@ -86,9 +88,11 @@ func Test_ToggleWeather_Increments_TimesChangedToday(t *testing.T) {
 func Test_That_ToggleWeather_Only_Toggles_TimesChangedLimit_Times(t *testing.T) {
 	// Arrange
 	dummySeed := rand.NewSource(1)
+	dummyLogger := agents.Logger{}
+	dummyDataProcessor := agents.DataProcessor{DataLogger: &dummyLogger}
 
 	// Act
-	weatherAgent := agents.NewWeather(&dummySeed)
+	weatherAgent := agents.NewWeather(&dummySeed, &dummyDataProcessor)
 	// Deliberatelly iterating one more time than the limit to prove that the weather is not toggled an extra time
 	for i := 0; i < weatherAgent.TimesChangedLimit+1; i++ {
 		weatherAgent.ToggleWeather()

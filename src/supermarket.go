@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"./agents"
 	"./manager"
 
@@ -11,8 +13,8 @@ import (
 func main() {
 	// Seed the random number
 	seed := rand.NewSource(time.Now().UnixNano())
-
-	const loggerOutput = "../out/loggeroutput"
+	workingDir, _ := os.Getwd()
+	loggerOutput := (workingDir + "\\out\\loggeroutput")
 
 	storeManager := manager.NewManager()
 	storeManager.StartCheckouts()
@@ -26,7 +28,7 @@ func main() {
 		// CustomerData: make(chan *agents.Customer),
 		DataLogger: &logger,
 	}
-	dataProcessor.ComputeAverageUtilisation()
+	go dataProcessor.ComputeAverageUtilisation()
 	weatherAgent := agents.NewWeather(&seed, &dataProcessor)
 	weatherAgent.ToggleWeather()
 
