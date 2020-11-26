@@ -20,8 +20,10 @@ func Test_That_RandnumGen_Generates_A_Random_Number_With_Parameter_Given(t *test
 func Test_That_NewCustomer_Creates_A_New_Customer(t *testing.T) {
 	//Arrange
 	dummySeed := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
+	dummpyWeather := agents.Weather{}
 	//Act
-	aCustomer := agents.NewCustomer(&dummySeed)
+	aCustomer := agents.NewCustomer(&dummySeed, &dummyDataProcessor, &dummpyWeather)
 	//Assert
 	assert.NotNil(t, aCustomer)
 }
@@ -47,10 +49,12 @@ func Test_That_FillTrolley_Fills_A_Trolley_With_Random_Number_Of_Items_Of_Random
 func Test_That_ToggleQueue_Sets_Flag_For_Customer_Queueing(t *testing.T) {
 	//Arrange
 	dummySeed := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
+	dummpyWeather := agents.Weather{}
 	//Expected
 	testQueue := true
 	//Actual
-	aCustomer := agents.NewCustomer(&dummySeed)
+	aCustomer := agents.NewCustomer(&dummySeed, &dummyDataProcessor, &dummpyWeather)
 	aCustomer.ToggleQueue()
 	assert.Equal(t, testQueue, aCustomer.Queue)
 }

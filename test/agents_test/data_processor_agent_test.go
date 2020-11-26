@@ -100,7 +100,7 @@ func Test_ComputeAverageUtilisation(t *testing.T) {
 	}()
 
 	go func() {
-		processor.ComputeAverageUtilisation()
+		processor.ComputeAverageUtilisation(10)
 		_, ok := <-processor.CheckoutUsage
 		assert.Equal(t, ok, false)
 	}()
