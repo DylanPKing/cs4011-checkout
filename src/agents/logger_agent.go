@@ -69,3 +69,28 @@ func (logger *Logger) LogCustomerLost(totalLostCustomers int64) {
 	fmt.Print(output.String())
 	logger.OutputBuffer.WriteString(output.String())
 }
+
+// LogWeatherChange will log what conditios have changed with the weather.
+func (logger *Logger) LogWeatherChange(
+	currentCondition string, patienceMultiplier float32,
+	entryRate float32, timesChanged int,
+) {
+	var output strings.Builder
+
+	output.WriteString(
+		fmt.Sprintf("The weather has changed to %s.\n", currentCondition),
+	)
+	output.WriteString(
+		fmt.Sprintf(
+			"\tNew customer patience multipler: %.2f\n", patienceMultiplier,
+		),
+	)
+	output.WriteString(
+		fmt.Sprintf("\tNew customer entry rate: %.2f\n", entryRate),
+	)
+	output.WriteString(
+		fmt.Sprintf("\tTotal times weather has changed: %d\n", timesChanged),
+	)
+	fmt.Print(output.String())
+	logger.OutputBuffer.WriteString(output.String())
+}

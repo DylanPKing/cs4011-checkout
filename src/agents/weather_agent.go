@@ -7,11 +7,13 @@ import (
 // Weather struct that models the weather agent in our application
 type Weather struct {
 	TimesChangedToday          int
+	TimesChangedLimit          int
 	CustomerPatienceMultiplier float32
 	CustomerEntryRate          float32
 	Conditions                 *Condition
 	CurrentCondition           string
 	Seed                       *rand.Source
+	dataProcessor              *DataProcessor
 }
 
 // Condition struct models a map of possible weather outcomes and the assocciated multipliers
@@ -20,7 +22,7 @@ type Condition struct {
 }
 
 // NewWeather creates a new Weather struct NOTE: this returns a pointer
-func NewWeather(seed *rand.Source) *Weather {
+func NewWeather(seed *rand.Source, dataProcessor *DataProcessor) *Weather {
 	// Roll for the set of conditions that the simulation will use
 	conditions := NewCondition()
 	conditions.setConditions(seed)
@@ -28,10 +30,12 @@ func NewWeather(seed *rand.Source) *Weather {
 	// Create the struct
 	weather := Weather{
 		TimesChangedToday:          0,
+		TimesChangedLimit:          3,
 		CustomerPatienceMultiplier: 1,
 		CustomerEntryRate:          1,
 		Seed:                       seed,
 		Conditions:                 conditions,
+		dataProcessor:              dataProcessor,
 	}
 	return &weather
 }
@@ -45,10 +49,14 @@ func NewCondition() *Condition {
 
 // ToggleWeather tries to change the current weather to a random weather from the chosen set of possible conditions
 func (weather *Weather) ToggleWeather() {
+	if weather.TimesChangedToday >= weather.TimesChangedLimit {
+		// If needed we can give some data to the data processor from here :)
+		return
+	}
 	var conditionsArray []string
 	randomCondition := (rand.New(*weather.Seed)).Intn(4)
 
-	// Since I can't really index a map, I'm using an array to hold a copy of each key for wasy access
+	// Since I can't really index a map, I'm using an array to hold a copy of each key for easy access
 	for i := range weather.Conditions.possibleConditions {
 		conditionsArray = append(conditionsArray, i)
 	}
@@ -59,6 +67,12 @@ func (weather *Weather) ToggleWeather() {
 	weather.CustomerEntryRate = weather.Conditions.possibleConditions[weather.CurrentCondition]
 	// Incerement the number is weather changes in a given simulation
 	weather.TimesChangedToday++
+	go weather.dataProcessor.ProcessWeatherChange(
+		weather.CurrentCondition,
+		weather.CustomerPatienceMultiplier,
+		weather.CustomerEntryRate,
+		weather.TimesChangedToday,
+	)
 }
 
 // setConditions selects a one set from the available sets of weathers to chose the weather later
