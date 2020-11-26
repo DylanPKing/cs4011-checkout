@@ -1,11 +1,10 @@
 package test
 
 import (
-	"../../src/agents"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
 
+	"../../src/agents"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,9 +12,10 @@ import (
 func Test_That_NewWeather_Creates_Struct_That_Is_Not_Nil(t *testing.T) {
 	// Arrange
 	dummySeed := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
 
 	// Act
-	weatherAgent := agents.NewWeather(&dummySeed)
+	weatherAgent := agents.NewWeather(&dummySeed, &dummyDataProcessor)
 
 	// Assert
 	assert.NotNil(t, weatherAgent)
@@ -37,10 +37,11 @@ func Test_setConditions_Sets_A_Set_Of_Conditions(t *testing.T) {
 	// Two seeds with the same source return the same sequence of numbers
 	dummySeed := rand.NewSource(1)
 	dummySeed2 := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
 
 	// Act
-	weatherAgent1 := agents.NewWeather(&dummySeed)
-	weatherAgent2 := agents.NewWeather(&dummySeed2)
+	weatherAgent1 := agents.NewWeather(&dummySeed, &dummyDataProcessor)
+	weatherAgent2 := agents.NewWeather(&dummySeed2, &dummyDataProcessor)
 
 	// Assert
 	assert.Equal(t, weatherAgent1.Conditions, weatherAgent2.Conditions)
@@ -52,10 +53,11 @@ func Test_ToggleWeather_Toggles_Weather(t *testing.T) {
 	// Two seeds with the same source return the same sequence of numbers
 	dummySeed := rand.NewSource(1)
 	dummySeed2 := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
 
 	// Act
-	weatherAgent1 := agents.NewWeather(&dummySeed)
-	weatherAgent2 := agents.NewWeather(&dummySeed2)
+	weatherAgent1 := agents.NewWeather(&dummySeed, &dummyDataProcessor)
+	weatherAgent2 := agents.NewWeather(&dummySeed2, &dummyDataProcessor)
 	weatherAgent1.ToggleWeather()
 
 	// Assert
@@ -68,10 +70,11 @@ func Test_ToggleWeather_Increments_TimesChangedToday(t *testing.T) {
 	// Two seeds with the same source return the same sequence of numbers
 	dummySeed := rand.NewSource(1)
 	dummySeed2 := rand.NewSource(1)
+	dummyDataProcessor := agents.DataProcessor{}
 
 	// Act
-	weatherAgent := agents.NewWeather(&dummySeed)
-	weatherAgent2 := agents.NewWeather(&dummySeed2)
+	weatherAgent := agents.NewWeather(&dummySeed, &dummyDataProcessor)
+	weatherAgent2 := agents.NewWeather(&dummySeed2, &dummyDataProcessor)
 	weatherAgent.ToggleWeather()
 
 	// Assert

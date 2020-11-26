@@ -80,3 +80,18 @@ func Test_LogCustomerLost(t *testing.T) {
 
 	assert.Equal(t, actualOutput, expectedOutput)
 }
+
+func Test_LogWeatherChange(t *testing.T) {
+	logger := agents.Logger{}
+
+	logger.LogWeatherChange("TestCondition", 1.0, 1.0, 1)
+
+	expectedOutput := "The weather has changed to TestCondition.\n" +
+		"\tNew customer patience multipler: 1.00\n" +
+		"\tNew customer entry rate: 1.00\n" +
+		"\tTotal times weather has changed: 1\n"
+
+	actualOutput := logger.OutputBuffer.String()
+
+	assert.Equal(t, actualOutput, expectedOutput)
+}
