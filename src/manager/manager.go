@@ -1,3 +1,9 @@
+// Till No. 7
+// Dylan King - 17197813
+// Louise Madden - 17198232
+// Brian Malone - 17198178
+// Szymon Sztyrmer - 17200296
+
 // Package manager controls the initial checkout configuration for the supermarket
 package manager
 
@@ -30,7 +36,7 @@ func (manager *Manager) StartCheckouts() {
 			"Please input the initial number of operating checkouts [1-8]", 1, 8,
 		)
 		manager.NumberOfExpressCheckouts = UserInputInt(
-			"Please input the number of express checkouts(no more than 5 items) [0-Total number of checkouts]", 0, manager.InitialNumberOfCheckouts,
+			"Please input the number of express checkouts(no more than X items) [0-Total number of checkouts]", 0, manager.InitialNumberOfCheckouts,
 		)
 		manager.NumberOfExpressItems = UserInputInt(
 			"Please enter the amount of items allowed at the express checkouts: [5-20]", 5, 20,
